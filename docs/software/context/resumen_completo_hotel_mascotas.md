@@ -203,30 +203,37 @@ erDiagram
 
 ---
 
-## 3. Hoja de Ruta para el SDD (*Software Design Document*)
+## 3. Hoja de Ruta del SDD (*Software Design Document*) — 100% Completada
 
-Para dar continuidad formal al proyecto bajo ingeniería de software, los capítulos a redactar en el SDD son:
+Todos los capítulos de ingeniería de software han sido formalmente redactados y versionados en el repositorio:
 
 ```
-[ ] Sección 1: Introducción, Alcance y Glosario de Términos del Dominio
-[ ] Sección 2: Especificación Formal de Requisitos (SRS)
-      - Requisitos Funcionales (RF-01 a RF-XX)
-      - Requisitos No Funcionales (RNF: Rendimiento, Seguridad, Concurrencia, Confiabilidad)
-[ ] Sección 3: Vistas Arquitectónicas del Sistema (C4 Model / 4+1)
-      - Diagrama de Contexto (Nivel 1)
-      - Diagrama de Contenedores (Nivel 2)
-      - Diagrama de Componentes (Nivel 3)
-[ ] Sección 4: Diseño Detallado de Datos y Estrategias de Concurrencia
-      - Esquema Físico DDL
-      - Mecanismos de Bloqueo (Optimistic/Pessimistic Locking contra overbooking)
-[ ] Sección 5: Contratos de Interfaces y APIs (OpenAPI / REST)
-[ ] Sección 6: Seguridad, Control de Acceso (RBAC) y Privacidad
-[ ] Sección 7: Matriz de Trazabilidad de Requisitos y Plan de Pruebas
+[x] Sección 1: Introducción, Alcance y Glosario de Términos del Dominio
+[x] Sección 2: Especificación Formal de Requisitos (SRS) -> docs/software/specs/srs_especificacion_requisitos.md
+      - Requisitos Funcionales (RF-01 a RF-15)
+      - Requisitos No Funcionales (RNF-01 a RNF-08: Rendimiento, Mobile-Native, Concurrencia, Confiabilidad)
+[x] Sección 3: Vistas Arquitectónicas del Sistema (C4 Model / 4+1) -> docs/software/architecture/c4_model_arquitectura.md
+      - Diagrama de Contexto (Nivel 1 C4)
+      - Diagrama de Contenedores (Nivel 2 C4)
+      - Diagrama de Componentes (Nivel 3 C4)
+[x] Sección 4: Diseño Detallado de Datos y Estrategias de Concurrencia -> docs/software/architecture/schema_ddl.sql
+      - Esquema Físico DDL PostgreSQL 15+ con GiST
+      - Mecanismos de Bloqueo (Pessimistic Locking contra overbooking)
+[x] Sección 5: Contratos de Interfaces y APIs (OpenAPI / REST) -> docs/software/specs/openapi_contratos_api.yaml
+[x] Sección 6: Seguridad, Control de Acceso (RBAC) y Privacidad -> docs/software/specs/seguridad_rbac_privacidad.md
+[x] Sección 7: Matriz de Trazabilidad de Requisitos y Plan de Pruebas -> docs/software/specs/plan_de_pruebas.md
 ```
 
 ---
 
 ## 4. Archivos Generados en la Sesión
 
-* **Documento Consolidado (este archivo):** `resumen_completo_hotel_mascotas.md`
-* **Plan Maestro de Arquitectura y UX:** `plan_hotel_mascotas.md`
+* **Documento Consolidado (este archivo):** `docs/software/context/resumen_completo_hotel_mascotas.md`
+* **Plan Maestro de Construcción del MVP:** `docs/software/specs/plan_mvp_hotel_mascotas.md`
+* **Especificación SRS (IEEE 830):** `docs/software/specs/srs_especificacion_requisitos.md`
+* **Vistas Arquitectónicas C4:** `docs/software/architecture/c4_model_arquitectura.md`
+* **Esquema DDL SQL Anti-Overbooking:** `docs/software/architecture/schema_ddl.sql`
+* **Especificación OpenAPI 3.0:** `docs/software/specs/openapi_contratos_api.yaml`
+* **Seguridad & RBAC:** `docs/software/specs/seguridad_rbac_privacidad.md`
+* **Plan de Pruebas de Software (Test Plan):** `docs/software/specs/plan_de_pruebas.md`
+* **Código Fuente React 19 + Tailwind v4:** `src/` (Desplegado en producción en Vercel)

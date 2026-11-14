@@ -1,0 +1,343 @@
+openapi: 3.0.3
+info:
+  title: API Hotel Cápsula para Mascotas (Salta Capital)
+  description: |
+    Contratos de interfaces RESTful para el Motor de Reservas y Panel de Operaciones
+    del Hotel Cápsula para Mascotas en Barrio Tres Cerritos, Salta.
+    Cumple con el estándar de arquitectura SDD / OpenAPI 3.0.
+  version: 1.0.0
+  contact:
+    name: Leandro Ovando / Ezequiel
+    email: contacto@hotelcapsulasalta.com
+
+servers:
+  - url: https://hotel-mascotas-app.vercel.app/api
+    description: Servidor de Producción (Vercel Edge)
+  - url: http://localhost:5173/api
+    description: Servidor Local de Desarrollo
+
+paths:
+  /capsulas:
+    get:
+      summary: Listar las 16 cápsulas físicas del hotel
+      description: Retorna el inventario completo o filtrado por especie y estado operativo.
+      parameters:
+        - name: especie
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [DOG, CAT]
+          description: Filtrar por sector canino o felino
+        - name: estado
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [DISPONIBLE, OCUPADA, RESERVADA, MANTENIMIENTO]
+      responses:
+        '200':
+          description: Lista de cápsulas obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Capsula'
+
+  /capsulas/{id}:
+    get:
+      summary: Obtener el detalle de una cápsula específica
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'C-01'
+      responses:
+        '200':
+          description: Detalle de la cápsula y reserva activa (si está ocupada)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapsulaDetalle'
+        '404':
+          description: Cápsula no encontrada
+
+  /reservas:
+    get:
+      summary: Listar reservas registradas (Panel Dueño)
+      parameters:
+        - name: estado
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [TODAS, CHECKIN, CONFIRMADA, COMPLETADA]
+        - name: q
+          in: query
+          required: false
+          schema:
+            type: string
+            description: Búsqueda por nombre de mascota, dueño o código
+      responses:
+        '200':
+          description: Lista de reservas filtradas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reserva'
+
+    post:
+      summary: Crear una nueva reserva de hospedaje o guardería
+      description: Valida fechas, bioseguridad, calcula costos y reserva la cápsula.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrearReservaDTO'
+      responses:
+        '201':
+          description: Reserva creada y confirmada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reserva'
+        '400':
+          description: Datos inválidos o cartilla de vacunas no conforme
+        '409':
+          description: Colisión de disponibilidad (cápsula ocupada en ese rango)
+
+  /reservas/{id}/checkin:
+    post:
+      summary: Registrar ingreso de la mascota (Check-in)
+      description: Cambia el estado de la reserva a CHECKIN y la cápsula a OCUPADA.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'RES-8901'
+      responses:
+        '200':
+          description: Check-in registrado exitosamente
+
+  /reservas/{id}/checkout:
+    post:
+      summary: Registrar egreso de la mascota (Check-out)
+      description: Cambia la reserva a COMPLETADA y libera la cápsula para desinfección/disponibilidad.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 'RES-8901'
+      responses:
+        '200':
+          description: Check-out registrado exitosamente
+
+  /reservas/{id}/servicios-extra:
+    post:
+      summary: Añadir un servicio complementario a una reserva en curso
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [servicioExtraId]
+              properties:
+                servicioExtraId:
+                  type: string
+                  example: 'spa-banio'
+      responses:
+        '200':
+          description: Servicio agregado y total recalculado
+
+  /kpis:
+    get:
+      summary: Obtener indicadores clave de desempeño para Ezequiel
+      responses:
+        '200':
+          description: Métricas en vivo del hotel
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KPIs'
+
+components:
+  schemas:
+    Capsula:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 'C-01'
+        codigo:
+          type: string
+          example: 'CAN-01'
+        nombre:
+          type: string
+          example: 'Cápsula Suite Canina C-01'
+        especie:
+          type: string
+          enum: [DOG, CAT]
+        categoria:
+          type: string
+          enum: [Standard, Deluxe, Master Penthouse]
+        precioNoche:
+          type: number
+          example: 28000
+        precioHoraDaycare:
+          type: number
+          example: 4500
+        estado:
+          type: string
+          enum: [DISPONIBLE, OCUPADA, RESERVADA, MANTENIMIENTO]
+        capacidadKgMax:
+          type: number
+          example: 35
+
+    CapsulaDetalle:
+      allOf:
+        - $ref: '#/components/schemas/Capsula'
+        - type: object
+          properties:
+            caracteristicas:
+              type: array
+              items:
+                type: string
+            reservaActual:
+              $ref: '#/components/schemas/Reserva'
+
+    Mascota:
+      type: object
+      properties:
+        id:
+          type: string
+        nombre:
+          type: string
+          example: 'Milo'
+        especie:
+          type: string
+          enum: [DOG, CAT]
+        raza:
+          type: string
+          example: 'Golden Retriever'
+        pesoKg:
+          type: number
+          example: 28
+        temperamento:
+          type: string
+          enum: [Sociable, Tranquilo, Miedoso, Enérgico]
+        alergiasNotas:
+          type: string
+        medicacion:
+          type: string
+        vacunasAlDia:
+          type: boolean
+
+    CrearReservaDTO:
+      type: object
+      required:
+        - tipoServicio
+        - fechaCheckIn
+        - fechaCheckOut
+        - capsulaId
+        - mascota
+      properties:
+        tipoServicio:
+          type: string
+          enum: [HOSPEDAJE, DAYCARE]
+        fechaCheckIn:
+          type: string
+          format: date
+          example: '2026-11-15'
+        fechaCheckOut:
+          type: string
+          format: date
+          example: '2026-11-18'
+        horasDaycare:
+          type: integer
+          example: 6
+        capsulaId:
+          type: string
+          example: 'C-04'
+        serviciosExtraIds:
+          type: array
+          items:
+            type: string
+        mascota:
+          $ref: '#/components/schemas/Mascota'
+        notasEspeciales:
+          type: string
+
+    Reserva:
+      type: object
+      properties:
+        id:
+          type: string
+        codigo:
+          type: string
+          example: 'SALTA-8901'
+        tipoServicio:
+          type: string
+        fechaCheckIn:
+          type: string
+        fechaCheckOut:
+          type: string
+        capsulaId:
+          type: string
+        subtotalHospedaje:
+          type: number
+        totalExtras:
+          type: number
+        total:
+          type: number
+        estado:
+          type: string
+          enum: [PENDIENTE, CONFIRMADA, CHECKIN, COMPLETADA, CANCELADA]
+        webcamToken:
+          type: string
+        mascota:
+          $ref: '#/components/schemas/Mascota'
+
+    KPIs:
+      type: object
+      properties:
+        totalCapsulas:
+          type: integer
+          example: 16
+        ocupadas:
+          type: integer
+          example: 7
+        disponibles:
+          type: integer
+          example: 8
+        reservadas:
+          type: integer
+          example: 1
+        porcentajeOcupacion:
+          type: integer
+          example: 44
+        ingresosHoy:
+          type: number
+          example: 182775
+        movimientosHoy:
+          type: integer
+          example: 2
+        alertasMedicas:
+          type: integer
+          example: 7
