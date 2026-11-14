@@ -1,6 +1,6 @@
 import React from 'react';
 import { useHotel } from '../context/HotelContext';
-import { Sparkles, ShieldCheck } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 export const ModeSelector: React.FC = () => {
   const { activeView, setActiveView, kpis } = useHotel();

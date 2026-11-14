@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Capsula, Especie, TipoServicio } from '../../types';
 import { useHotel } from '../../context/HotelContext';
-import { X, Calendar, User, Sparkles, Check, AlertCircle, ShieldCheck, ChevronRight, ChevronLeft } from 'lucide-react';
+import { X, Sparkles, Check, ShieldCheck, ChevronRight, ChevronLeft } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 interface BookingWizardModalProps {
@@ -311,6 +311,33 @@ export const BookingWizardModal: React.FC<BookingWizardModalProps> = ({ capsula,
                     <option value="Miedoso">Tímido / Miedoso</option>
                     <option value="Enérgico">Muy enérgico</option>
                   </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">
+                    Alergias / Cuidados
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ej: Pollo, polen..."
+                    value={alergiasNotas}
+                    onChange={(e) => setAlergiasNotas(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:border-amber-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">
+                    Medicación
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ej: Ninguna / Gotas..."
+                    value={medicacion}
+                    onChange={(e) => setMedicacion(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 text-sm focus:border-amber-500 focus:outline-none"
+                  />
                 </div>
               </div>
 
