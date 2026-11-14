@@ -1,0 +1,17 @@
+{
+  "name": "Pet Capsule Hotel Salta",
+  "short_name": "PetCapsule",
+  "description": "Hotel Cápsula para Mascotas en Tres Cerritos, Salta. Reservas online y control en tiempo real.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
