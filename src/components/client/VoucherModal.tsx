@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Reserva } from '../../types';
 import { useHotel } from '../../context/HotelContext';
-import { X, CheckCircle, Video, Phone, MapPin, Calendar, Share2, Sparkles, ArrowRight } from 'lucide-react';
+import { X, CheckCircle, Video, Phone, MapPin, Calendar, Share2, Sparkles, ArrowRight, Navigation } from 'lucide-react';
+import { LocationModal } from '../LocationModal';
 
 interface VoucherModalProps {
   reserva: Reserva | null;
@@ -11,6 +12,7 @@ interface VoucherModalProps {
 export const VoucherModal: React.FC<VoucherModalProps> = ({ reserva, onClose }) => {
   const { setActiveView, capsulas, serviciosExtra } = useHotel();
   const [verCamaraDemo, setVerCamaraDemo] = useState(false);
+  const [verModalUbicacion, setVerModalUbicacion] = useState(false);
 
   if (!reserva) return null;
 
@@ -101,14 +103,22 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({ reserva, onClose }) 
           </div>
 
           {/* Location Badge */}
-          <div className="flex items-start gap-2 p-3 bg-amber-50/60 rounded-xl border border-amber-200/50 text-xs text-amber-900">
-            <MapPin className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-            <div>
-              <span className="font-bold block">Ubicación del Hotel:</span>
-              <span className="text-[11px] text-amber-800">
-                Barrio Tres Cerritos (a 5 min del centro de Salta). Estacionamiento exclusivo para check-in.
-              </span>
+          <div
+            onClick={() => setVerModalUbicacion(true)}
+            className="flex items-start justify-between gap-2 p-3 bg-amber-50/70 hover:bg-amber-100/70 rounded-xl border border-amber-200/60 text-xs text-amber-900 cursor-pointer transition-colors pressable"
+          >
+            <div className="flex items-start gap-2">
+              <MapPin className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-bold block">Ubicación del Hotel:</span>
+                <span className="text-[11px] text-amber-800">
+                  Barrio Tres Cerritos (a 5 min del centro de Salta).
+                </span>
+              </div>
             </div>
+            <span className="text-[10px] font-bold text-amber-700 bg-white/80 px-2 py-0.5 rounded-md whitespace-nowrap self-center">
+              Ver Mapa
+            </span>
           </div>
 
           {/* Simulated Webcam Feature */}
@@ -191,6 +201,11 @@ export const VoucherModal: React.FC<VoucherModalProps> = ({ reserva, onClose }) 
           </button>
         </div>
       </div>
+
+      <LocationModal
+        isOpen={verModalUbicacion}
+        onClose={() => setVerModalUbicacion(false)}
+      />
     </div>
   );
 };
